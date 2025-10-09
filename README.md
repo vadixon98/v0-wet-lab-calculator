@@ -1,30 +1,55 @@
 # Wet Lab Calculator
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+A web-based tool for performing common wet lab calculations. Built and deployed automatically using [v0.app](https://v0.app) and [Vercel](https://vercel.com).
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/victoriadixon-oerthbiocoms-projects/v0-wet-lab-calculator)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/u0nliYxIOsa)
+[Deployed on Vercel](https://vercel.com/victoriadixon-oerthbiocoms-projects/v0-wet-lab-calculator)  
+[Built with v0.app](https://v0.app/chat/projects/u0nliYxIOsa)
+
+---
 
 ## Overview
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+The Wet Lab Calculator simplifies standard experimental calculations used in molecular biology, biochemistry, and general lab workflows.  
+It includes tools for reagent preparation, concentration conversions, and dilution adjustments, all accessible through a browser interface.
+
+This repository remains automatically synchronized with your deployed project on [v0.app](https://v0.app).  
+Any changes made through the v0 editor are reflected here to ensure version consistency between the app and the repository.
+
+---
 
 ## Deployment
 
-Your project is live at:
-
+Your live application is hosted on Vercel:  
 **[https://vercel.com/victoriadixon-oerthbiocoms-projects/v0-wet-lab-calculator](https://vercel.com/victoriadixon-oerthbiocoms-projects/v0-wet-lab-calculator)**
 
-## Build your app
+Deployments are automatically triggered when updates are made through [v0.app](https://v0.app).  
+You can also deploy manually by referencing a branch or commit, for example:
 
-Continue building your app on:
 
-**[https://v0.app/chat/projects/u0nliYxIOsa](https://v0.app/chat/projects/u0nliYxIOsa)**
+---
 
-## How It Works
+## Features
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+- Buffer and dilution calculators  
+- Molarity and concentration conversions  
+- Reagent mix scaling for experiment preparation  
+- Unit conversions (µL, mL, mg, µg, etc.)  
+- Continuous integration and deployment via Vercel  
+
+---
+
+## Development
+
+To continue building or modifying the application, open the project in v0:  
+[https://v0.app/chat/projects/u0nliYxIOsa](https://v0.app/chat/projects/u0nliYxIOsa)
+
+To work locally:
+
+```bash
+git clone https://github.com/vadixon98/Wet-Lab-Calculator.git
+cd Wet-Lab-Calculator
+npm install
+npm run dev
+
+
+
