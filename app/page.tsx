@@ -104,7 +104,7 @@ export default function WetLabCalculator() {
             </h1>
           </div>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Professional calculation tools for bench scientists. Accurate, fast, and beautifully designed.
+            Professional calculator tool for bench scientists. Accurate, fast, and beautifully designed.
           </p>
         </header>
 
