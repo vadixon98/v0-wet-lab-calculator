@@ -7,7 +7,10 @@ import { UnitInput } from "@/components/unit-input"
 import { PrecisionSelector } from "@/components/precision-selector"
 import { CopyButton } from "@/components/copy-button"
 import { ResetButton } from "@/components/reset-button"
+import { PresetManager } from "@/components/preset-manager"
+import { usePresets } from "@/hooks/use-presets"
 import { calculateDilution } from "@/lib/calculations"
+import { useToast } from "@/hooks/use-toast"
 
 const ANTIBIOTIC_PRESETS = [
   { name: "Ampicillin", stockConc: 100, workingConc: 100, unit: "mg/mL" },
@@ -41,6 +44,9 @@ export function AntibioticsCalculator() {
   const [errors, setErrors] = useState<string[]>([])
 
   const concentrationUnits = ["mg/mL", "µg/mL"]
+
+  const { presets, savePreset, deletePreset, loadPreset } = usePresets("antibiotics")
+  const { toast } = useToast()
 
   // Update values when antibiotic preset changes
   useEffect(() => {
@@ -110,6 +116,55 @@ export function AntibioticsCalculator() {
     setErrors([])
   }
 
+  const handleSavePreset = (name: string) => {
+    savePreset(name, {
+      selectedAntibiotic,
+      stockConc,
+      stockUnit,
+      workingConc,
+      workingUnit,
+      finalVolume,
+      volumeUnit,
+      plateVolume,
+      plateUnit,
+      precision,
+    })
+    toast({
+      title: "Preset saved!",
+      description: `"${name}" has been saved to your favorites.`,
+    })
+  }
+
+  const handleLoadPreset = (id: string) => {
+    const preset = loadPreset(id)
+    if (preset) {
+      setSelectedAntibiotic(preset.values.selectedAntibiotic)
+      setStockConc(preset.values.stockConc)
+      setStockUnit(preset.values.stockUnit)
+      setWorkingConc(preset.values.workingConc)
+      setWorkingUnit(preset.values.workingUnit)
+      setFinalVolume(preset.values.finalVolume)
+      setVolumeUnit(preset.values.volumeUnit)
+      setPlateVolume(preset.values.plateVolume)
+      setPlateUnit(preset.values.plateUnit)
+      setPrecision(preset.values.precision)
+      toast({
+        title: "Preset loaded!",
+        description: `"${preset.name}" has been loaded.`,
+      })
+    }
+  }
+
+  const handleDeletePreset = (id: string) => {
+    const preset = presets.find((p) => p.id === id)
+    deletePreset(id)
+    toast({
+      title: "Preset deleted",
+      description: `"${preset?.name}" has been removed.`,
+      variant: "destructive",
+    })
+  }
+
   return (
     <Card className="rounded-2xl shadow-xl border-t-4 border-t-rose-500 bg-white/80 dark:bg-slate-900/60 backdrop-blur border border-white/60 dark:border-white/10">
       <CardHeader className="pb-4">
@@ -127,6 +182,16 @@ export function AntibioticsCalculator() {
       </CardHeader>
 
       <CardContent className="space-y-6">
+        <div className="flex justify-end">
+          <PresetManager
+            presets={presets}
+            onSave={handleSavePreset}
+            onLoad={handleLoadPreset}
+            onDelete={handleDeletePreset}
+            disabled={!stockConc || !workingConc || !finalVolume || errors.length > 0}
+          />
+        </div>
+
         {/* Antibiotic Preset Selector */}
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Antibiotic Preset</label>

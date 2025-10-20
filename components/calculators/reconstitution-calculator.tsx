@@ -7,7 +7,10 @@ import { UnitInput } from "@/components/unit-input"
 import { PrecisionSelector } from "@/components/precision-selector"
 import { CopyButton } from "@/components/copy-button"
 import { ResetButton } from "@/components/reset-button"
+import { PresetManager } from "@/components/preset-manager"
+import { usePresets } from "@/hooks/use-presets"
 import { calculateReconstitution } from "@/lib/calculations"
+import { useToast } from "@/hooks/use-toast"
 
 export function ReconstitutionCalculator() {
   const [powderMass, setPowderMass] = useState("")
@@ -28,6 +31,9 @@ export function ReconstitutionCalculator() {
 
   const concentrationUnits = ["M", "mM", "µM", "nM", "mg/mL", "µg/mL"]
   const isMolarUnit = ["M", "mM", "µM", "nM"].includes(concUnit)
+
+  const { presets, savePreset, deletePreset, loadPreset } = usePresets("reconstitution")
+  const { toast } = useToast()
 
   useEffect(() => {
     const newErrors: string[] = []
@@ -64,6 +70,47 @@ export function ReconstitutionCalculator() {
     setErrors([])
   }
 
+  const handleSavePreset = (name: string) => {
+    savePreset(name, {
+      powderMass,
+      massUnit,
+      targetConc,
+      concUnit,
+      molecularWeight,
+      precision,
+    })
+    toast({
+      title: "Preset saved!",
+      description: `"${name}" has been saved to your favorites.`,
+    })
+  }
+
+  const handleLoadPreset = (id: string) => {
+    const preset = loadPreset(id)
+    if (preset) {
+      setPowderMass(preset.values.powderMass)
+      setMassUnit(preset.values.massUnit)
+      setTargetConc(preset.values.targetConc)
+      setConcUnit(preset.values.concUnit)
+      setMolecularWeight(preset.values.molecularWeight)
+      setPrecision(preset.values.precision)
+      toast({
+        title: "Preset loaded!",
+        description: `"${preset.name}" has been loaded.`,
+      })
+    }
+  }
+
+  const handleDeletePreset = (id: string) => {
+    const preset = presets.find((p) => p.id === id)
+    deletePreset(id)
+    toast({
+      title: "Preset deleted",
+      description: `"${preset?.name}" has been removed.`,
+      variant: "destructive",
+    })
+  }
+
   return (
     <Card className="rounded-2xl shadow-xl border-t-4 border-t-violet-500 bg-white/80 dark:bg-slate-900/60 backdrop-blur border border-white/60 dark:border-white/10">
       <CardHeader className="pb-4">
@@ -81,6 +128,17 @@ export function ReconstitutionCalculator() {
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* PresetManager component */}
+        <div className="flex justify-end">
+          <PresetManager
+            presets={presets}
+            onSave={handleSavePreset}
+            onLoad={handleLoadPreset}
+            onDelete={handleDeletePreset}
+            disabled={!powderMass || !targetConc || errors.length > 0}
+          />
+        </div>
+
         {/* Inputs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UnitInput

@@ -7,7 +7,10 @@ import { UnitInput } from "@/components/unit-input"
 import { PrecisionSelector } from "@/components/precision-selector"
 import { CopyButton } from "@/components/copy-button"
 import { ResetButton } from "@/components/reset-button"
+import { PresetManager } from "@/components/preset-manager"
+import { usePresets } from "@/hooks/use-presets"
 import { calculateDilution } from "@/lib/calculations"
+import { useToast } from "@/hooks/use-toast"
 
 export function DilutionCalculator() {
   const [stockConc, setStockConc] = useState("")
@@ -28,6 +31,9 @@ export function DilutionCalculator() {
   const [errors, setErrors] = useState<string[]>([])
 
   const concentrationUnits = ["M", "mM", "µM", "nM", "mg/mL", "µg/mL", "% w/v"]
+
+  const { presets, savePreset, deletePreset, loadPreset } = usePresets("dilution")
+  const { toast } = useToast()
 
   useEffect(() => {
     const newErrors: string[] = []
@@ -67,6 +73,49 @@ export function DilutionCalculator() {
     setErrors([])
   }
 
+  const handleSavePreset = (name: string) => {
+    savePreset(name, {
+      stockConc,
+      stockUnit,
+      finalConc,
+      finalUnit,
+      finalVolume,
+      volumeUnit,
+      precision,
+    })
+    toast({
+      title: "Preset saved!",
+      description: `"${name}" has been saved to your favorites.`,
+    })
+  }
+
+  const handleLoadPreset = (id: string) => {
+    const preset = loadPreset(id)
+    if (preset) {
+      setStockConc(preset.values.stockConc)
+      setStockUnit(preset.values.stockUnit)
+      setFinalConc(preset.values.finalConc)
+      setFinalUnit(preset.values.finalUnit)
+      setFinalVolume(preset.values.finalVolume)
+      setVolumeUnit(preset.values.volumeUnit)
+      setPrecision(preset.values.precision)
+      toast({
+        title: "Preset loaded!",
+        description: `"${preset.name}" has been loaded.`,
+      })
+    }
+  }
+
+  const handleDeletePreset = (id: string) => {
+    const preset = presets.find((p) => p.id === id)
+    deletePreset(id)
+    toast({
+      title: "Preset deleted",
+      description: `"${preset?.name}" has been removed.`,
+      variant: "destructive",
+    })
+  }
+
   return (
     <Card className="rounded-2xl shadow-xl border-t-4 border-t-emerald-500 bg-white/80 dark:bg-slate-900/60 backdrop-blur border border-white/60 dark:border-white/10">
       <CardHeader className="pb-4">
@@ -82,6 +131,17 @@ export function DilutionCalculator() {
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* PresetManager component */}
+        <div className="flex justify-end">
+          <PresetManager
+            presets={presets}
+            onSave={handleSavePreset}
+            onLoad={handleLoadPreset}
+            onDelete={handleDeletePreset}
+            disabled={!stockConc || !finalConc || !finalVolume || errors.length > 0}
+          />
+        </div>
+
         {/* Inputs */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <UnitInput
