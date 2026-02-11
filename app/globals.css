@@ -273,6 +273,10 @@ body {
   background: linear-gradient(135deg, rgb(99 102 241), rgb(139 92 246));
 }
 
+.converter-gradient {
+  background: linear-gradient(135deg, rgb(20 184 166), rgb(6 148 162));
+}
+
 /* Added hover effects and transitions */
 .calculator-card {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

@@ -7,6 +7,7 @@ import { UnitInput } from "@/components/unit-input"
 import { PrecisionSelector } from "@/components/precision-selector"
 import { CopyButton } from "@/components/copy-button"
 import { ResetButton } from "@/components/reset-button"
+import { ExportProtocol } from "@/components/export-protocol"
 import { PresetManager } from "@/components/preset-manager"
 import { usePresets } from "@/hooks/use-presets"
 import { calculateConcentration } from "@/lib/calculations"
@@ -264,15 +265,44 @@ export function ConcentrationCalculator() {
         {/* Controls */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
           <PrecisionSelector value={precision} onChange={setPrecision} />
-          <ResetButton onReset={handleReset} />
+          <div className="flex items-center gap-2">
+            {results && (
+              <ExportProtocol
+                calculatorName="Concentration Calculator"
+                accentColor="#f59e0b"
+                inputs={[
+                  { label: "Mass", value: `${mass} ${massUnit}` },
+                  { label: "Volume", value: `${volume} ${volumeUnit}` },
+                  ...(molecularWeight ? [{ label: "Molecular Weight", value: `${molecularWeight} g/mol` }] : []),
+                ]}
+                results={[
+                  { label: "Concentration (mg/mL)", value: results.mgMl.toFixed(precision) },
+                  { label: "Concentration (ug/mL)", value: results.ugMl.toFixed(precision) },
+                  { label: "Concentration (% w/v)", value: `${results.percentWV.toFixed(precision)}%` },
+                  ...(results.molarity !== undefined
+                    ? [{ label: "Molarity", value: `${results.molarity.toFixed(precision)} M` }]
+                    : []),
+                ]}
+                protocolSteps={[
+                  { text: `Weigh ${mass} ${massUnit} of solute` },
+                  { text: `Dissolve in ${volume} ${volumeUnit} of solvent` },
+                  { text: "Mix thoroughly until completely dissolved" },
+                  { text: `Resulting concentration: ${results.mgMl.toFixed(precision)} mg/mL` },
+                ]}
+                formula="mg/mL = mass (mg) / volume (mL) | % w/v = mass (g) / volume (mL) x 100 | Molarity = mass (g) / (MW x volume (L))"
+                notes="These are theoretical concentrations assuming complete dissolution. Verify with appropriate assay if precision is critical."
+              />
+            )}
+            <ResetButton onReset={handleReset} />
+          </div>
         </div>
 
         {/* Formulas */}
         <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
           <strong>Formulas:</strong>
-          <br />• mg/mL = (mass in mg) / (volume in mL)
-          <br />• % w/v = (mass in g) / (volume in mL) × 100
-          <br />• Molarity = (mass in g) / (MW × volume in L)
+          <br />{"mg/mL = (mass in mg) / (volume in mL)"}
+          <br />{"% w/v = (mass in g) / (volume in mL) x 100"}
+          <br />{"Molarity = (mass in g) / (MW x volume in L)"}
         </div>
       </CardContent>
     </Card>

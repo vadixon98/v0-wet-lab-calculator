@@ -7,6 +7,7 @@ import { UnitInput } from "@/components/unit-input"
 import { PrecisionSelector } from "@/components/precision-selector"
 import { CopyButton } from "@/components/copy-button"
 import { ResetButton } from "@/components/reset-button"
+import { ExportProtocol } from "@/components/export-protocol"
 import { PresetManager } from "@/components/preset-manager"
 import { usePresets } from "@/hooks/use-presets"
 import { calculateReconstitution } from "@/lib/calculations"
@@ -246,14 +247,49 @@ export function ReconstitutionCalculator() {
         {/* Controls */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
           <PrecisionSelector value={precision} onChange={setPrecision} />
-          <ResetButton onReset={handleReset} />
+          <div className="flex items-center gap-2">
+            {results && (
+              <ExportProtocol
+                calculatorName="Reconstitution Calculator"
+                accentColor="#8b5cf6"
+                inputs={[
+                  { label: "Powder Mass", value: `${powderMass} ${massUnit}` },
+                  { label: "Target Concentration", value: `${targetConc} ${concUnit}` },
+                  ...(isMolarUnit && molecularWeight
+                    ? [{ label: "Molecular Weight", value: `${molecularWeight} g/mol` }]
+                    : []),
+                ]}
+                results={[
+                  { label: "Solvent Volume", value: `${results.solventVolume.toFixed(precision)} ${results.volumeUnit}` },
+                  ...results.equivalents.map((eq) => ({
+                    label: "Equivalent",
+                    value: `${eq.value.toFixed(precision)} ${eq.unit}`,
+                  })),
+                ]}
+                protocolSteps={[
+                  { text: `Add ${powderMass} ${massUnit} of powder to a clean container` },
+                  { text: `Add ${results.solventVolume.toFixed(precision)} ${results.volumeUnit} of solvent` },
+                  { text: "Mix thoroughly until completely dissolved" },
+                  { text: `Verify final concentration: ${targetConc} ${concUnit}` },
+                  { text: "Aliquot if needed and store per reagent specifications" },
+                ]}
+                formula={
+                  isMolarUnit
+                    ? "Volume = (mass / MW) / molarity"
+                    : "Volume = mass / concentration"
+                }
+                notes="Ensure powder is fully dissolved before use. Some reagents may require warming or sonication. Store reconstituted solution per manufacturer instructions."
+              />
+            )}
+            <ResetButton onReset={handleReset} />
+          </div>
         </div>
 
         {/* Formula */}
         <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
           <strong>Formulas:</strong>
-          <br />• For mg/mL: volume = mass / concentration
-          <br />• For molarity: volume = (mass / MW) / molarity
+          <br />{"For mg/mL: volume = mass / concentration"}
+          <br />{"For molarity: volume = (mass / MW) / molarity"}
         </div>
       </CardContent>
     </Card>

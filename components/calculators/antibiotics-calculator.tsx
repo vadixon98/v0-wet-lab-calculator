@@ -7,6 +7,7 @@ import { UnitInput } from "@/components/unit-input"
 import { PrecisionSelector } from "@/components/precision-selector"
 import { CopyButton } from "@/components/copy-button"
 import { ResetButton } from "@/components/reset-button"
+import { ExportProtocol } from "@/components/export-protocol"
 import { PresetManager } from "@/components/preset-manager"
 import { usePresets } from "@/hooks/use-presets"
 import { calculateDilution } from "@/lib/calculations"
@@ -343,12 +344,41 @@ export function AntibioticsCalculator() {
         {/* Controls */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
           <PrecisionSelector value={precision} onChange={setPrecision} />
-          <ResetButton onReset={handleReset} />
+          <div className="flex items-center gap-2">
+            {results && results.isValid && (
+              <ExportProtocol
+                calculatorName={`Antibiotics Calculator - ${selectedAntibiotic}`}
+                accentColor="#f43f5e"
+                inputs={[
+                  { label: "Antibiotic", value: selectedAntibiotic },
+                  { label: "Stock Concentration (C1)", value: `${stockConc} ${stockUnit}` },
+                  { label: "Working Concentration (C2)", value: `${workingConc} ${workingUnit}` },
+                  { label: "Final Volume (V2)", value: `${finalVolume} ${volumeUnit}` },
+                  ...(plateVolume ? [{ label: "Plate Volume", value: `${plateVolume} ${plateUnit}` }] : []),
+                ]}
+                results={[
+                  { label: "Stock Volume (V1)", value: `${results.stockVolume.toFixed(precision)} ${results.volumeUnit}` },
+                  { label: "Diluent Volume", value: `${results.diluentVolume.toFixed(precision)} ${results.volumeUnit}` },
+                ]}
+                protocolSteps={[
+                  { text: `Add ${results.stockVolume.toFixed(precision)} ${results.volumeUnit} of ${selectedAntibiotic} stock (${stockConc} ${stockUnit})` },
+                  { text: `Add ${results.diluentVolume.toFixed(precision)} ${results.volumeUnit} of sterile medium/buffer` },
+                  { text: `Mix thoroughly to achieve ${workingConc} ${workingUnit} working concentration` },
+                  ...(plateVolume
+                    ? [{ text: `Use ${plateVolume} ${plateUnit} per plate/well as needed` }]
+                    : []),
+                ]}
+                formula="C1 x V1 = C2 x V2, where V1 = (C2 x V2) / C1"
+                notes={`Store ${selectedAntibiotic} stocks at -20C. Prepare working solutions fresh and use within 24 hours. Always filter sterilize if not using sterile stock solutions.`}
+              />
+            )}
+            <ResetButton onReset={handleReset} />
+          </div>
         </div>
 
         {/* Formula */}
         <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
-          <strong>Formula:</strong> C₁V₁ = C₂V₂, where V₁ = (C₂ × V₂) / C₁
+          <strong>Formula:</strong> {"C\u2081V\u2081 = C\u2082V\u2082, where V\u2081 = (C\u2082 \u00D7 V\u2082) / C\u2081"}
           <br />
           <strong>Common stocks:</strong> Ampicillin (100 mg/mL), Kanamycin (50 mg/mL), Chloramphenicol (34 mg/mL)
         </div>

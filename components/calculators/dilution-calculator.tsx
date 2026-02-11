@@ -7,6 +7,7 @@ import { UnitInput } from "@/components/unit-input"
 import { PrecisionSelector } from "@/components/precision-selector"
 import { CopyButton } from "@/components/copy-button"
 import { ResetButton } from "@/components/reset-button"
+import { ExportProtocol } from "@/components/export-protocol"
 import { PresetManager } from "@/components/preset-manager"
 import { usePresets } from "@/hooks/use-presets"
 import { calculateDilution } from "@/lib/calculations"
@@ -247,14 +248,39 @@ export function DilutionCalculator() {
         {/* Controls */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
           <PrecisionSelector value={precision} onChange={setPrecision} />
-          <ResetButton onReset={handleReset} />
+          <div className="flex items-center gap-2">
+            {results && results.isValid && (
+              <ExportProtocol
+                calculatorName="Dilution Calculator"
+                accentColor="#10b981"
+                inputs={[
+                  { label: "Stock Concentration (C1)", value: `${stockConc} ${stockUnit}` },
+                  { label: "Final Concentration (C2)", value: `${finalConc} ${finalUnit}` },
+                  { label: "Final Volume (V2)", value: `${finalVolume} ${volumeUnit}` },
+                ]}
+                results={[
+                  { label: "Stock Volume (V1)", value: `${results.stockVolume.toFixed(precision)} ${results.volumeUnit}` },
+                  { label: "Diluent Volume", value: `${results.diluentVolume.toFixed(precision)} ${results.volumeUnit}` },
+                ]}
+                protocolSteps={[
+                  { text: `Add ${results.stockVolume.toFixed(precision)} ${results.volumeUnit} of stock solution (${stockConc} ${stockUnit})` },
+                  { text: `Add ${results.diluentVolume.toFixed(precision)} ${results.volumeUnit} of diluent` },
+                  { text: `Mix thoroughly to achieve final volume of ${finalVolume} ${results.volumeUnit}` },
+                  { text: `Final concentration: ${finalConc} ${finalUnit}` },
+                ]}
+                formula="C1 x V1 = C2 x V2, where V1 = (C2 x V2) / C1"
+                notes="Diluent volume = V2 - V1. Always add stock to diluent for better mixing. Verify concentration with spectrophotometry if critical."
+              />
+            )}
+            <ResetButton onReset={handleReset} />
+          </div>
         </div>
 
         {/* Formula */}
         <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
-          <strong>Formula:</strong> C₁V₁ = C₂V₂, where V₁ = (C₂ × V₂) / C₁
+          <strong>Formula:</strong> {"C\u2081V\u2081 = C\u2082V\u2082, where V\u2081 = (C\u2082 \u00D7 V\u2082) / C\u2081"}
           <br />
-          <strong>Note:</strong> Diluent volume = V₂ - V₁
+          <strong>Note:</strong> {"Diluent volume = V\u2082 - V\u2081"}
         </div>
       </CardContent>
     </Card>

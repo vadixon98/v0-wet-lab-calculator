@@ -7,6 +7,7 @@ import { UnitInput } from "@/components/unit-input"
 import { PrecisionSelector } from "@/components/precision-selector"
 import { CopyButton } from "@/components/copy-button"
 import { ResetButton } from "@/components/reset-button"
+import { ExportProtocol } from "@/components/export-protocol"
 import { PresetManager } from "@/components/preset-manager"
 import { usePresets } from "@/hooks/use-presets"
 import { calculateMolarity } from "@/lib/calculations"
@@ -220,12 +221,42 @@ export function MolarityCalculator() {
         {/* Controls */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
           <PrecisionSelector value={precision} onChange={setPrecision} />
-          <ResetButton onReset={handleReset} />
+          <div className="flex items-center gap-2">
+            {results && (
+              <ExportProtocol
+                calculatorName="Molarity Calculator"
+                accentColor="#0ea5e9"
+                inputs={[
+                  { label: "Molecular Weight", value: `${molecularWeight} g/mol` },
+                  { label: "Desired Concentration", value: `${concentration} ${concentrationUnit}` },
+                  { label: "Desired Volume", value: `${volume} ${volumeUnit}` },
+                ]}
+                results={[
+                  { label: "Required Mass", value: `${results.mass.toFixed(precision)} ${results.massUnit}` },
+                  ...results.equivalents.map((eq) => ({
+                    label: "Equivalent",
+                    value: `${eq.value.toFixed(precision)} ${eq.unit}`,
+                  })),
+                ]}
+                protocolSteps={[
+                  { text: `Weigh out ${results.mass.toFixed(precision)} ${results.massUnit} of solute (MW: ${molecularWeight} g/mol)` },
+                  { text: `Add solute to a volumetric flask or container` },
+                  { text: `Add approximately 80% of ${volume} ${volumeUnit} of solvent` },
+                  { text: `Mix thoroughly until completely dissolved` },
+                  { text: `Bring to final volume of ${volume} ${volumeUnit}` },
+                  { text: `Final concentration: ${concentration} ${concentrationUnit}` },
+                ]}
+                formula="mass (g) = Molarity (mol/L) x Volume (L) x Molecular Weight (g/mol)"
+                notes="Ensure the solute is fully dissolved before bringing to final volume. Store according to reagent specifications."
+              />
+            )}
+            <ResetButton onReset={handleReset} />
+          </div>
         </div>
 
         {/* Formula */}
         <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
-          <strong>Formula:</strong> mass (g) = M [mol/L] × volume (L) × MW [g/mol]
+          <strong>Formula:</strong> mass (g) = M [mol/L] x volume (L) x MW [g/mol]
         </div>
       </CardContent>
     </Card>

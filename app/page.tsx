@@ -1,15 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Calculator, Beaker, Droplets, TestTube, BarChart3, Pill, FlaskConical } from "lucide-react"
+import { Calculator, Beaker, Droplets, TestTube, BarChart3, Pill, FlaskConical, ArrowRightLeft } from "lucide-react"
 import { MolarityCalculator } from "@/components/calculators/molarity-calculator"
 import { DilutionCalculator } from "@/components/calculators/dilution-calculator"
 import { ReconstitutionCalculator } from "@/components/calculators/reconstitution-calculator"
 import { ConcentrationCalculator } from "@/components/calculators/concentration-calculator"
 import { AntibioticsCalculator } from "@/components/calculators/antibiotics-calculator"
 import { BatchCalculator } from "@/components/calculators/batch-calculator"
+import { UnitConverter } from "@/components/calculators/unit-converter"
 
-type CalculatorType = "molarity" | "dilution" | "reconstitution" | "concentration" | "antibiotics" | "batch"
+type CalculatorType = "molarity" | "dilution" | "reconstitution" | "concentration" | "antibiotics" | "batch" | "converter"
 
 const calculators = [
   {
@@ -60,6 +61,14 @@ const calculators = [
     gradient: "batch-gradient",
     color: "indigo",
   },
+  {
+    id: "converter" as const,
+    name: "Converter",
+    emoji: "🔄",
+    icon: ArrowRightLeft,
+    gradient: "converter-gradient",
+    color: "teal",
+  },
 ]
 
 export default function WetLabCalculator() {
@@ -79,6 +88,8 @@ export default function WetLabCalculator() {
         return <AntibioticsCalculator />
       case "batch":
         return <BatchCalculator />
+      case "converter":
+        return <UnitConverter />
       default:
         return <MolarityCalculator />
     }
