@@ -9,6 +9,7 @@ import { ConcentrationCalculator } from "@/components/calculators/concentration-
 import { AntibioticsCalculator } from "@/components/calculators/antibiotics-calculator"
 import { BatchCalculator } from "@/components/calculators/batch-calculator"
 import { UnitConverter } from "@/components/calculators/unit-converter"
+import { DocsDialog } from "@/components/docs-dialog"
 
 type CalculatorType = "molarity" | "dilution" | "reconstitution" | "concentration" | "antibiotics" | "batch" | "converter"
 
@@ -124,6 +125,7 @@ export default function WetLabCalculator() {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
               Wet Lab Calculator
             </h1>
+            <DocsDialog />
           </div>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Professional calculation tools for bench scientists. Accurate, fast, and beautifully designed.
